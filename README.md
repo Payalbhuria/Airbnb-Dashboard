@@ -36,11 +36,6 @@ This project focuses on analyzing Airbnb listing data across multiple regions to
 
 ---
 
-## 📥 Download Dashboard
-[Download PBIX File](https://drive.google.com/file/d/1VYBR9aPNeIrB1tm9KIfAirx5c-r_xFas/view?usp=sharing)
-
----
-
 ## 💡 Skills Demonstrated
 - Data Cleaning  
 - Data Visualization  
