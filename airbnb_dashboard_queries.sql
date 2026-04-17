@@ -1,13 +1,5 @@
--- ============================================================
--- AIRBNB GLOBAL MALE DASHBOARD - SQL QUERIES
--- Dataset: Listings.csv + Reviews.csv
--- ============================================================
 
-
--- ============================================================
 -- STEP 1: CREATE TABLES
--- ============================================================
-
 CREATE TABLE IF NOT EXISTS listings (
     listing_id BIGINT PRIMARY KEY,
     name TEXT,
@@ -51,11 +43,6 @@ CREATE TABLE IF NOT EXISTS reviews (
     reviewer_id BIGINT
 );
 
-
--- ============================================================
--- STEP 2: KPI QUERIES (Top Cards on Dashboard)
--- ============================================================
-
 -- Total Listings
 SELECT COUNT(*) AS total_listings
 FROM listings;
@@ -83,10 +70,8 @@ SELECT COUNT(*) AS total_reviews
 FROM reviews;
 
 
--- ============================================================
--- STEP 3: PRICE ANALYSIS
--- ============================================================
 
+-- PRICE ANALYSIS
 -- Average Price by City
 SELECT city,
        ROUND(AVG(price)::NUMERIC, 2) AS avg_price,
@@ -127,10 +112,8 @@ GROUP BY price_range
 ORDER BY total_listings DESC;
 
 
--- ============================================================
--- STEP 4: HOST ANALYSIS
--- ============================================================
 
+-- HOST ANALYSIS
 -- Superhost vs Non-Superhost Count
 SELECT 
     CASE WHEN host_is_superhost = TRUE THEN 'Superhost' ELSE 'Regular Host' END AS host_type,
@@ -167,10 +150,8 @@ GROUP BY host_response_time
 ORDER BY total_listings DESC;
 
 
--- ============================================================
--- STEP 5: REVIEW ANALYSIS
--- ============================================================
 
+-- REVIEW ANALYSIS
 -- Total Reviews Per Year
 SELECT EXTRACT(YEAR FROM date) AS year,
        COUNT(*) AS total_reviews
@@ -208,10 +189,8 @@ GROUP BY l.city
 ORDER BY avg_reviews_per_listing DESC;
 
 
--- ============================================================
--- STEP 6: NEIGHBOURHOOD & LOCATION ANALYSIS
--- ============================================================
 
+--  NEIGHBOURHOOD & LOCATION ANALYSIS
 -- Top 10 Neighbourhoods by Listings
 SELECT neighbourhood,
        city,
@@ -233,10 +212,8 @@ GROUP BY city
 ORDER BY total_listings DESC;
 
 
--- ============================================================
--- STEP 7: ROOM TYPE & PROPERTY ANALYSIS
--- ============================================================
 
+-- ROOM TYPE & PROPERTY ANALYSIS
 -- Listings by Room Type
 SELECT room_type,
        COUNT(*) AS total_listings,
@@ -264,10 +241,8 @@ GROUP BY accommodates
 ORDER BY accommodates;
 
 
--- ============================================================
--- STEP 8: REVIEW SCORES ANALYSIS
--- ============================================================
 
+--  REVIEW SCORES ANALYSIS
 -- Average Review Scores by City
 SELECT city,
        ROUND(AVG(review_scores_rating)::NUMERIC, 2) AS avg_rating,
@@ -289,10 +264,8 @@ GROUP BY room_type
 ORDER BY avg_rating DESC;
 
 
--- ============================================================
--- STEP 9: INSTANT BOOKABLE ANALYSIS
--- ============================================================
 
+-- STEP 9: INSTANT BOOKABLE ANALYSIS
 SELECT 
     CASE WHEN instant_bookable = TRUE THEN 'Instant Bookable' ELSE 'Not Instant Bookable' END AS booking_type,
     COUNT(*) AS total_listings,
@@ -302,20 +275,3 @@ FROM listings
 GROUP BY instant_bookable;
 
 
--- ============================================================
--- STEP 10: COMBINED / DASHBOARD SUMMARY VIEW
--- ============================================================
-
--- Full Summary by City (used for comparison table in dashboard)
-SELECT 
-    l.city,
-    COUNT(DISTINCT l.listing_id) AS total_listings,
-    COUNT(DISTINCT l.host_id) AS total_hosts,
-    SUM(CASE WHEN l.host_is_superhost = TRUE THEN 1 ELSE 0 END) AS superhosts,
-    ROUND(AVG(l.price)::NUMERIC, 2) AS avg_price,
-    ROUND(AVG(l.review_scores_rating)::NUMERIC, 2) AS avg_rating,
-    COUNT(r.review_id) AS total_reviews
-FROM listings l
-LEFT JOIN reviews r ON l.listing_id = r.listing_id
-GROUP BY l.city
-ORDER BY total_listings DESC;
